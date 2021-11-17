@@ -17,11 +17,13 @@ add_subdirectory(external/glfw3)
 
 add_definitions(-DDEBUG_PRINT=${DEBUG_PRINT})
 if(DEBUG_PRINT)
-  add_definitions(-D_DEBUG)
+  add_definitions(-D_DEBUG -DWall -DWerror)
 endif()
 
 file(GLOB SOURCE
     src/debug_print.h
+    src/window_event.h
+    src/window_event.c
     src/term_window.h
     src/term_window.c
     src/main.c)

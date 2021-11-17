@@ -12,7 +12,8 @@ inline static void PrintGLInfo()
     const unsigned char *version = glGetString(GL_VERSION);
     const unsigned char *vendor = glGetString(GL_VENDOR);
     const unsigned char *renderer = glGetString(GL_RENDERER);
-    debug_print("GL version: %s\nGL vendor: %s\nGL Renderer: %s\n",version,vendor,renderer);
+    const unsigned char *glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    debug_print("GL version: %s\nGL vendor: %s\nGL Renderer: %s\nGlsl version: %s\n",version,vendor,renderer,glsl_version);
 }
 #else
 inline static void PrintGLInfo();
@@ -28,7 +29,7 @@ inline static int glfw_gl_surface_create(GLFWwindow *window,uint32_t width,uint3
     return 1;
 }
 
-int CreateTermWindow(struct TermWindow *window,uint32_t width,uint32_t height,const char *window_title,enum TermWindowHint hint)
+int CreateTermWindow(struct TermWindow *window,uint32_t width,uint32_t height,const char *window_title,enum TermWindowType hint)
 {   
     if(!glfwInit()){
         debug_print("File:%s:%d glfw init failed\n",__FILE__,__LINE__);
@@ -42,6 +43,7 @@ int CreateTermWindow(struct TermWindow *window,uint32_t width,uint32_t height,co
     }
     window->width = width;
     window->height = height;
+    window->window_type = hint;
     switch (hint)
     {
         case TERM_GL_WINDOW :{
@@ -51,17 +53,20 @@ int CreateTermWindow(struct TermWindow *window,uint32_t width,uint32_t height,co
                 glfwTerminate();
                 return 0;
             }
+            if(GLVersion.major < 3 && GLVersion.minor < 3){
+                debug_print("File:%s:%d Minimum opengl version 3.3 required\n",__FILE__,__LINE__);
+            }
             PrintGLInfo();            
         }break;
         case TERM_VULKAN_WINDOW :{
-            //TODO: create vulkan window
+            //TODO: create vulkan surface
             debug_print("File:%s:%d Vulkan context creation still not implemented!\n",__FILE__,__LINE__);
             glfwDestroyWindow(window->m_window);
             glfwTerminate();
             return 0;
         }break;
         case TERM_NO_API :{
-            //TODO: create no api window
+            //TODO: create no api surface
             debug_print("File:%s:%d No api context creation still not implemented!\n",__FILE__,__LINE__);
             glfwDestroyWindow(window->m_window);
             glfwTerminate();
@@ -87,6 +92,24 @@ void WindowPollEvents()
 void WindowWaitEvents()
 {
     glfwWaitEvents();
+}
+
+void WindowSwapBuffers(struct TermWindow *window)
+{
+    glfwSwapBuffers(window->m_window);
+}
+
+int IsWindowOpen(struct TermWindow *window)
+{
+    if(!glfwWindowShouldClose(window->m_window)){
+        return 1;
+    }
+    return 0;
+}
+
+void CloseWindow(struct TermWindow *window)
+{
+    glfwSetWindowShouldClose(window->m_window,1);
 }
 
 int DestroyWindow(struct TermWindow *window)
