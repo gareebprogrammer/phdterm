@@ -10,21 +10,23 @@ int ReadEntireFile(const char *path,struct EntireFile *file_buf)
     if(!res){
         return 0;
     }
-    debug_print("File size: %d\n", file_size);
     FILE *file = fopen(path,"rb");
-    if(!file){
-        debug_print("File: %s Line:%d : fopen failed\n",__FILE__,__LINE__);
+    if(!file) {
+        debug_print("fopen error\n");
         return 0;
     }
-    file_buf->buf = malloc(sizeof(file_size+1));
-    if(!file_buf->buf){
-        debug_print("File: %s Line:%d : Allocation failed\n",__FILE__,__LINE__);
+    
+    file_buf->buf = malloc(file_size+1); 
+    if(!file_buf->buf) {
+        debug_print("allocation error\n");
         return 0;
     }
-    file_buf->size = file_size;
-    fread(file_buf->buf,file_size,1,file);
-    if(file){
-        fclose(file);
+    size_t read_count = fread(file_buf->buf,file_size,1,file);
+    if(read_count != 1) {
+      debug_print("fread failed\n");
+      free(file_buf->buf);
+      return 0;
     }
+    fclose(file);
     return 1;
 }

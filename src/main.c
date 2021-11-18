@@ -1,12 +1,12 @@
 #include "file_util.h"
 #include "debug_print.h"
+#include <stdio.h>
 
 int main(int argc,char *argv[]){
     struct EntireFile file;
     int res = ReadEntireFile("CMakeCache.txt",&file);
-    if(!res){
-        debug_print("Read failed\n");
-        return 0xdead;
-    }
-    debug_print("%s\n",(char *)file.buf);
+    char *ptr = (char *)file.buf;
+    printf("%s\n", ptr);
+    free(file.buf);
+    return res;
 }
