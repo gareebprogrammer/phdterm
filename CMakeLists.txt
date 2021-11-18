@@ -17,7 +17,8 @@ add_subdirectory(external/glfw3)
 
 add_definitions(-DDEBUG_PRINT=${DEBUG_PRINT})
 if(DEBUG_PRINT)
-  add_definitions(-D_DEBUG -DWall -DWerror)
+  add_definitions(-D_DEBUG)
+  add_compile_options(-Wall -Wextra)
 endif()
 
 file(GLOB SOURCE
@@ -26,6 +27,10 @@ file(GLOB SOURCE
     src/window_event.c
     src/term_window.h
     src/term_window.c
+    src/file_ops.h
+    src/fileops_linux.c
+    src/file_util.h
+    src/file_util.c
     src/main.c)
 
 add_executable(phdterm ${SOURCE} ${OPENGL_INCLUDE_DIRS})

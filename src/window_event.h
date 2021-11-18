@@ -54,7 +54,7 @@ typedef struct TermEvent
         GLFWwindow* window;
         GLFWmonitor* monitor;
         int joystick;
-    };
+    }glfw_data;
     union {
         struct {
             int x;
@@ -90,7 +90,7 @@ typedef struct TermEvent
             float y;
         } scale;
 #endif
-    };
+    }data;
 } TermEvent;
 
 

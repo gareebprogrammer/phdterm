@@ -40,38 +40,38 @@ static void term_window_pos_callback(GLFWwindow* window, int x, int y)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_WINDOW_MOVED;
-    event->window = window;
-    event->pos.x = x;
-    event->pos.y = y;
+    event->glfw_data.window = window;
+    event->data.pos.x = x;
+    event->data.pos.y = y;
 }
 
 static void term_window_size_callback(GLFWwindow* window, int width, int height)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_WINDOW_RESIZED;
-    event->window = window;
-    event->size.width = width;
-    event->size.height = height;
+    event->glfw_data.window = window;
+    event->data.size.width = width;
+    event->data.size.height = height;
 }
 
 static void term_window_close_callback(GLFWwindow* window)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_WINDOW_CLOSED;
-    event->window = window;
+    event->glfw_data.window = window;
 }
 
 static void term_window_refresh_callback(GLFWwindow* window)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_WINDOW_REFRESH;
-    event->window = window;
+    event->glfw_data.window = window;
 }
 
 static void term_window_focus_callback(GLFWwindow* window, int focused)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
+    event->glfw_data.window = window;
 
     if (focused)
         event->type = TERM_WINDOW_FOCUSED;
@@ -82,7 +82,7 @@ static void term_window_focus_callback(GLFWwindow* window, int focused)
 static void term_window_iconify_callback(GLFWwindow* window, int iconified)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
+    event->glfw_data.window = window;
 
     if (iconified)
         event->type = TERM_WINDOW_ICONIFIED;
@@ -94,17 +94,17 @@ static void term_framebuffer_size_callback(GLFWwindow* window, int width, int he
 {
     TermEvent* event = term_new_event();
     event->type = TERM_FRAMEBUFFER_RESIZED;
-    event->window = window;
-    event->size.width = width;
-    event->size.height = height;
+    event->glfw_data.window = window;
+    event->data.size.width = width;
+    event->data.size.height = height;
 }
 
 static void term_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
-    event->mouse.button = button;
-    event->mouse.mods = mods;
+    event->glfw_data.window = window;
+    event->data.mouse.button = button;
+    event->data.mouse.mods = mods;
 
     if (action == GLFW_PRESS)
         event->type = TERM_BUTTON_PRESSED;
@@ -116,15 +116,15 @@ static void term_cursor_pos_callback(GLFWwindow* window, double x, double y)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_CURSOR_MOVED;
-    event->window = window;
-    event->pos.x = (int) x;
-    event->pos.y = (int) y;
+    event->glfw_data.window = window;
+    event->data.pos.x = (int) x;
+    event->data.pos.y = (int) y;
 }
 
 static void term_cursor_enter_callback(GLFWwindow* window, int entered)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
+    event->glfw_data.window = window;
 
     if (entered)
         event->type = TERM_CURSOR_ENTERED;
@@ -136,18 +136,18 @@ static void term_scroll_callback(GLFWwindow* window, double x, double y)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_SCROLLED;
-    event->window = window;
-    event->scroll.x = x;
-    event->scroll.y = y;
+    event->glfw_data.window = window;
+    event->data.scroll.x = x;
+    event->data.scroll.y = y;
 }
 
 static void term_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
-    event->keyboard.key = key;
-    event->keyboard.scancode = scancode;
-    event->keyboard.mods = mods;
+    event->glfw_data.window = window;
+    event->data.keyboard.key = key;
+    event->data.keyboard.scancode = scancode;
+    event->data.keyboard.mods = mods;
 
     if (action == GLFW_PRESS)
         event->type = TERM_KEY_PRESSED;
@@ -161,14 +161,14 @@ static void term_char_callback(GLFWwindow* window, unsigned int codepoint)
 {
     TermEvent* event = term_new_event();
     event->type = TERM_CODEPOINT_INPUT;
-    event->window = window;
-    event->codepoint = codepoint;
+    event->glfw_data.window = window;
+    event->data.codepoint = codepoint;
 }
 
 static void term_monitor_callback(GLFWmonitor* monitor, int action)
 {
     TermEvent* event = term_new_event();
-    event->monitor = monitor;
+    event->glfw_data.monitor = monitor;
 
     if (action == GLFW_CONNECTED)
         event->type = TERM_MONITOR_CONNECTED;
@@ -181,12 +181,12 @@ static void term_file_drop_callback(GLFWwindow* window, int count, const char** 
 {
     TermEvent* event = term_new_event();
     event->type = TERM_FILE_DROPPED;
-    event->window = window;
-    event->file.paths = (char**) malloc(count * sizeof(char*));
-    event->file.count = count;
+    event->glfw_data.window = window;
+    event->data.file.paths = (char**) malloc(count * sizeof(char*));
+    event->data.file.count = count;
 
     while (count--)
-        event->file.paths[count] = TermStrDup(paths[count]);
+        event->data.file.paths[count] = TermStrDup(paths[count]);
 }
 #endif
 
@@ -194,7 +194,7 @@ static void term_file_drop_callback(GLFWwindow* window, int count, const char** 
 static void term_joystick_callback(int jid, int action)
 {
     TermEvent* event = term_new_event();
-    event->joystick = jid;
+    event->glfw_data.joystick = jid;
 
     if (action == GLFW_CONNECTED)
         event->type = TERM_JOYSTICK_CONNECTED;
@@ -207,7 +207,7 @@ static void term_joystick_callback(int jid, int action)
 static void term_window_maximize_callback(GLFWwindow* window, int maximized)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
+    event->glfw_data.window = window;
 
     if (maximized)
         event->type = TERM_WINDOW_MAXIMIZED;
@@ -218,10 +218,10 @@ static void term_window_maximize_callback(GLFWwindow* window, int maximized)
 static void term_window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
 {
     TermEvent* event = term_new_event();
-    event->window = window;
+    event->glfw_data.window = window;
     event->type = TERM_WINDOW_SCALE_CHANGED;
-    event->scale.x = xscale;
-    event->scale.y = yscale;
+    event->data.scale.x = xscale;
+    event->data.scale.y = yscale;
 }
 #endif
 
@@ -274,10 +274,10 @@ void TermFreeEvent(TermEvent* event)
 #if GLFW_VERSION_MINOR >= 1
     if (event->type == TERM_FILE_DROPPED)
     {
-        while (event->file.count--)
-            free(event->file.paths[event->file.count]);
+        while (event->data.file.count--)
+            free(event->data.file.paths[event->data.file.count]);
 
-        free(event->file.paths);
+        free(event->data.file.paths);
     }
 #endif
     memset(event, 0, sizeof(TermEvent));
