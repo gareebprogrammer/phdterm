@@ -1,22 +1,9 @@
-#include <glad/glad.h>
 #include "term_window.h"
 #include "debug_print.h"
+#include "gl_utils.h"
 
 #ifdef __cplusplus
     extern "C" { 
-#endif
-
-#if _DEBUG
-inline static void PrintGLInfo()
-{
-    const unsigned char *version = glGetString(GL_VERSION);
-    const unsigned char *vendor = glGetString(GL_VENDOR);
-    const unsigned char *renderer = glGetString(GL_RENDERER);
-    const unsigned char *glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
-    debug_print("GL version: %s\nGL vendor: %s\nGL Renderer: %s\nGlsl version: %s\n",version,vendor,renderer,glsl_version);
-}
-#else
-inline static void PrintGLInfo();
 #endif
 
 inline static int glfw_gl_surface_create(GLFWwindow *window,uint32_t width,uint32_t height)
@@ -56,7 +43,9 @@ int CreateTermWindow(struct TermWindow *window,uint32_t width,uint32_t height,co
             if(GLVersion.major < 3 && GLVersion.minor < 3){
                 debug_print("File:%s:%d Minimum opengl version 3.3 required\n",__FILE__,__LINE__);
             }
-            PrintGLInfo();            
+#if _DEBUG
+        PrintGLInfo();
+#endif
         }break;
         case TERM_VULKAN_WINDOW :{
             //TODO: create vulkan surface

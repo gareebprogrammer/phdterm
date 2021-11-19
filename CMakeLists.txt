@@ -31,6 +31,8 @@ file(GLOB SOURCE
     src/fileops_linux.c
     src/file_util.h
     src/file_util.c
+    src/gl_utils.h
+    src/gl_utils.c
     src/main.c)
 
 add_executable(phdterm ${SOURCE} ${OPENGL_INCLUDE_DIRS})

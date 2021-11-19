@@ -21,6 +21,7 @@ int ReadEntireFile(const char *path,struct EntireFile *file_buf)
         debug_print("allocation error\n");
         return 0;
     }
+    file_buf->size = file_size;
     size_t read_count = fread(file_buf->buf,file_size,1,file);
     if(read_count != 1) {
       debug_print("fread failed\n");
